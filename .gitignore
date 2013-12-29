@@ -1,0 +1,17 @@
+lib-cov
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+*.gz
+*.iml
+
+.idea
+pids
+logs
+results
+build
+
+node_modules

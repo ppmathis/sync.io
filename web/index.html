@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>Status - sync.io</title>
+
+        <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+        <link href="css/bootstrap-dialog.css" rel="stylesheet" type="text/css" />
+        <link href="css/style.css" rel="stylesheet" type="text/css" />
+
+        <script src="js/jquery-1.10.2.min.js" type="text/javascript"></script>
+        <script src="js/knockout-3.0.0.min.js" type="text/javascript"></script>
+        <script src="js/bootstrap.min.js" type="text/javascript"></script>
+        <script src="js/bootstrap-dialog.js" type="text/javascript"></script>
+        <script src="js/moment.min.js" type="text/javascript"></script>
+        <script src="js/app.js" type="text/javascript"></script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <div class="logo"></div>
+                <div class="version">
+                    Version <span data-bind="text: appVersion"> N/A</span><br />&copy; 2013 Pascal Mathis
+                </div>
+            </div>
+            <div style="clear: both;"></div>
+            <div class="body">
+                <table class="share-table">
+                    <thead>
+                        <tr>
+                            <th>Share ID</th>
+                            <th>Announced at</th>
+                            <th>Last request</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody data-bind="foreach: shares">
+                        <tr>
+                            <td>
+                                <span data-bind="text: id"></span>
+                            </td>
+                            <td data-bind="text: moment(createdAt).format('YYYY-MM-DD HH:mm:ss')"></td>
+                            <td data-bind="text: moment(updatedAt).format('YYYY-MM-DD HH:mm:ss')"></td>
+                            <td>
+                                <button class="btn btn-primary btn-xs" data-bind="click: $parent.showPeers">
+                                    <i class="glyphicon glyphicon-user"></i>
+                                    Show <span data-bind="text: (peers.length == 1) ? peers.length + ' peer' : peers.length + ' peers'">1</span>
+                                </button>
+                                <button class="btn btn-danger btn-xs" data-bind="click: $parent.flushAnnouncement">
+                                    <i class="glyphicon glyphicon-trash"></i>
+                                    <span>Flush announcement</span>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="footer">
+                Please notice that this application is unofficial and not affiliated or related to BitTorrent, Inc.
+            </div>
+        </div>
+    </body>
+</html>
