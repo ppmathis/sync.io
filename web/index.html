@@ -41,7 +41,7 @@
                             </td>
                             <td data-bind="text: moment(createdAt).format('YYYY-MM-DD HH:mm:ss')"></td>
                             <td data-bind="text: moment(updatedAt).format('YYYY-MM-DD HH:mm:ss')"></td>
-                            <td>
+                            <td style="white-space: nowrap;">
                                 <button class="btn btn-primary btn-xs" data-bind="click: $parent.showPeers">
                                     <i class="glyphicon glyphicon-user"></i>
                                     Show <span data-bind="text: (peers.length == 1) ? peers.length + ' peer' : peers.length + ' peers'">1</span>
