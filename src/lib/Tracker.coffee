@@ -10,11 +10,34 @@ module.exports = class Tracker
 
   # Class constructor
   constructor: (@_app) ->
+    # Initialize some class variables
     @_shares = {}
     @_handlers =
       get_peers: require('./packets/get_peers')
 
-  # Handles incoming packets. This function should only be called by the sync server
+    # Delete dead peers and shares every 10 seconds
+    setInterval(@_deleteDeadPeers, 10000)
+
+  # Delete peers which did not send any announcement since a amount
+  # of time which is specified within the configuration.
+  _deleteDeadPeers: =>
+    NOW = new Date()
+    for _, share of @_shares
+      for _, peer of share.peers
+        if Math.round((NOW - peer.updatedAt) / 1000) > (@_app.getConfig().peerTimeout)
+          @_app.getLogger().debug('Deleted dead peer: ' + peer.id)
+          delete share.peers[peer.id]
+    @_deleteDeadShares()
+
+  # Delete shares if do not contain any peers anymore.
+  _deleteDeadShares: =>
+    NOW = new Date()
+    for _, share of @_shares
+      if Object.keys(share.peers).length <= 0
+        @_app.getLogger().metric('Deleted dead share: ' + share.id)
+        delete @_shares[share.id]
+
+  # Handles incoming packets. This function should only be called by the sync server.
   handlePacket: (packetData, peer) ->
     # Check if packet contains the field 'm' (packet type)
     if not packetData.m? or not packetData.m.toString?

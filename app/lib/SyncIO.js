@@ -51,6 +51,10 @@
       return this._syncServer.listen((_ref2 = this._config.syncServerPort) != null ? _ref2 : 3000, (_ref3 = this._config.syncServerAddress) != null ? _ref3 : null);
     };
 
+    SyncIO.prototype.getConfig = function() {
+      return this._config;
+    };
+
     SyncIO.prototype.getLogger = function() {
       return this._logger;
     };

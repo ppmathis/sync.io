@@ -49,6 +49,7 @@ module.exports = class SyncIO
     @_syncServer.listen(@_config.syncServerPort ? 3000, @_config.syncServerAddress ? null)
 
   # Various getters
+  getConfig: -> return @_config
   getLogger: -> return @_logger
   getTracker: -> return @_tracker
   getWebServer: -> return @_webServer
