@@ -6,34 +6,50 @@
 fs = require('fs')
 devnull = require('devnull')
 pjson = require('../../package.json')
-errors = require('./errors')
+errors = require('./utils/errors')
 
+Tracker = require('./Tracker')
 SyncServer = require('./SyncServer')
 WebServer = require('./WebServer')
 
 module.exports = class SyncIO
-  constructor: (@configPath) ->
-    @initializeLogging()
-    @loadConfig()
 
+  # Class constructor
+  constructor: () ->
+    # Initialize some private variables
+    @_tracker = new Tracker(@)
+
+    @initializeLogging()
+
+  # Initialize the application-wide logger and print a welcome message
   initializeLogging: ->
-    @log = new devnull(
+    @_logger = new devnull(
       namespacing: 0
       level: if process.env.NODE_ENV?.toLowerCase() is 'debug' then 8 else 7
     )
-    @log.warning('--- sync.io v' + pjson.version + ' by Pascal Mathis <dev@snapserv.net> ---')
-    @log.warning('This application is unofficial and not affiliated or related to BitTorrent, Inc.')
+    @_logger.warning('--- sync.io v' + pjson.version + ' by Pascal Mathis <dev@snapserv.net> ---')
+    @_logger.warning('This application is unofficial and not affiliated or related to BitTorrent, Inc.')
 
-  loadConfig: ->
+  # Load the app configuration from the given file. This function can only be
+  # called once, existing configuration values will always be overwritten by
+  # the last loaded file.
+  loadConfig: (configFile) ->
     try
-      configData = fs.readFileSync(@configPath)
-      @config = JSON.parse(configData)
+      configData = fs.readFileSync(configFile)
+      @_config = JSON.parse(configData)
     catch err
       throw new errors.ConfigurationError('Could not load configuration file!\n' + err)
 
+  # Start the application. This method starts the web and sync server at the ports
+  # specified within the configuration.
   run: ->
-    @webServer = new WebServer(@)
-    @webServer.listen(@config.webPort ? 4000, @config.webAddress ? null)
+    @_webServer = new WebServer(@)
+    @_webServer.listen(@_config.webServerPort ? 4000, @_config.webServerAddress ? null)
+    @_syncServer = new SyncServer(@)
+    @_syncServer.listen(@_config.syncServerPort ? 3000, @_config.syncServerAddress ? null)
 
-    @syncServer = new SyncServer(@config, @log)
-    @syncServer.listen(@config.serverPort ? 3000, @config.serverAddress ? null)
+  # Various getters
+  getLogger: -> return @_logger
+  getTracker: -> return @_tracker
+  getWebServer: -> return @_webServer
+  getSyncServer: -> return @_syncServer

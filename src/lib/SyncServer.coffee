@@ -1,88 +1,73 @@
 # sync.io
 #
-# Created by Pascal Mathis at 12/29/13
+# Created by Pascal Mathis at 1/11/14
 # License: GPLv3 (Please see LICENSE for more information)
 
 dgram = require('dgram')
 bencoding = require('bencoding')
-errors = require('./errors')
-packets = require('./packets')
-
-BTSYNC_HEADER = new Buffer([66, 83, 89, 78, 67, 0])
 
 module.exports = class SyncServer
-  constructor: (@config, @log) ->
-    # Create sockets
-    @socket = dgram.createSocket('udp4')
-    @socket.on('error', @onError)
-    @socket.on('message', @onMessage)
+  # Every packet from BTSync starts with "BSYNC\0"
+  PACKET_HEADER = new Buffer([66, 83, 89, 78, 67, 0])
 
-    # Initialize some properties
-    @trackerData = {}
+  # Class constructor
+  constructor: (@_app) ->
+    # Initialize server socket
+    @_socket = dgram.createSocket('udp4')
+    @_socket.on('error', @_onSocketError)
+    @_socket.on('message', @_onSocketMessage)
 
-    # Check for dead pools and shares every 10 seconds
-    setInterval(@deleteDeadPeers, 10000)
+  _onSocketError: (err) =>
+    @_app.getLogger().error('Socket error: ' + err.toString?())
 
-  deleteDeadPeers: =>
-    now = new Date()
-    for _, share of @trackerData
-      for key, peer of share.peers
-        if Math.round((now - peer.updatedAt) / 1000) > (@config.peerTimeout ? 60)
-          @log.debug('Deleted dead peer: ' + key)
-          delete share.peers[key]
+  _onSocketMessage: (packet, peer) =>
+    [packetHeader, packetPayload] = @_parsePacketHeader(packet)
 
-    @deleteDeadShares()
+    # It is really hard to distinguish between packets which are meant
+    # for the tracker server and others which are meant for the relay server.
+    # There isn't any header, just the payload is different.
+    #
+    # However, there is a 'dirty' way to determine the packet type:
+    # Packets for the relay server start with the peer id (20bytes)
+    # followed by bencoded data. However, tracker packets immediately
+    # start with bencoded data. That's why we try to decode the
+    # data, and if it fails, it must be a relay server packet.
+    packetData = bencoding.decode(packetPayload)
+    if packetData.length isnt 0
+      @_app.getTracker().handlePacket(packetData.toJSON(), peer)
+    else
+      @_app.getLogger().warning('Relay server not yet implemented. Packet discarded.')
+      # relayPeer = packetPayload.slice(0, 20).toString('hex')
+      # packetPayload = packetPayload.slice(20)
+      # @_app.getRelay().handlePacket(packetPayload, relayPeer)
 
-  deleteDeadShares: =>
-    now = new Date()
-    for key, share of @trackerData
-      if Object.keys(share.peers).length <= 0
-        @log.log('Deleted dead share: ' + key)
-        delete @trackerData[key]
+  _parsePacketHeader: (packet) ->
+    # Split header from payload
+    packetHeader = packet.slice(0, PACKET_HEADER.length)
+    packetPayload = packet.slice(PACKET_HEADER.length)
 
-  onError: (err) =>
-    @log.error(err)
+    # Verify if header is valid
+    if not packetHeader.toString('hex') is PACKET_HEADER.toString('hex')
+      @_app.getLogger().debug('Expected packet header: ' + PACKET_HEADER.toString('hex'))
+      @_app.getLogger().debug('Received packet header: ' + packetHeader.toString('hex'))
+      @_app.getLogger().warning('Discarded packet with invalid header.')
 
-  onMessage: (packet, rpeer) =>
-    # Split package into header and payload parts
-    packetHeader = packet.slice(0, BTSYNC_HEADER.length)
-    packetPayload = packet.slice(packetHeader.length)
+    # Return header and payload
+    return [packetHeader, packetPayload]
 
-    # Check for valid BTSync header
-    if not packetHeader.toString('hex') == BTSYNC_HEADER.toString('hex')
-      @log.warning('Destroyed received package with invalid header.')
-      return
-
-    # Try to decode packet with bencode
-    try
-      packetData = bencoding.decode(packetPayload).toJSON()
-    catch err
-      @log.warning('Destroyed received package with invalid payload.')
-      return
-
-    # Dispatch packet to packet handler
-    @handlePacket(packetData, rpeer)
-
-  handlePacket: (packet, rpeer) ->
-    packetType = packet.m.toString()
-
-    # Try to find a valid packet handler
-    switch packetType
-      when 'get_peers'
-        packets.get_peers(@, rpeer, packet)
-      else
-        @log.warning('Unknown packet type received: ' + packetType)
-
-  send: (answer, peer) ->
-    # Encode answer with bencode and prepend BTSync header
-    packetPayload = bencoding.encode(answer)
-    packet = new Buffer(packetPayload.length + BTSYNC_HEADER.length)
-    BTSYNC_HEADER.copy(packet)
-    packetPayload.copy(packet, BTSYNC_HEADER.length)
-
-    # Send packet to peer
-    @socket.send(packet, 0, packet.length, peer.port, peer.address)
-
+  # Starts the sync server and listens at the given address and port
   listen: (port, address) ->
-    @socket.bind(port, address)
-    @log.info('sync.io tracker and relay server listening on ' + address + ':' + port)
+    @_socket.bind(port, address)
+    @_app.getLogger().info('Sync server listening on ' + address + ':' + port)
+
+  # Sends an answer packet back to the given peer
+  sendAnswer: (answerData, peer) ->
+    # Encode answer data with bencode and prepend BTSync header
+    packetPayload = bencoding.encode(answerData)
+    packet = new Buffer(PACKET_HEADER.length + packetPayload.length)
+
+    PACKET_HEADER.copy(packet)
+    packetPayload.copy(packet, PACKET_HEADER)
+
+    # Send packet back to peer
+    @_socket.send(packet, 0, packet.length, peer.port, peer.address)

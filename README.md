@@ -5,7 +5,7 @@
 sync.io is a open-source **BitTorrent Sync** tracker server, which is meant for internal use within companies. A open-source relay server is under development and will follow soon. A special gimmick is the inbuilt web status page where you can see all announced shares and their peers.
 
 ## License ##
-GPL version 3. Please take a look into LICENE if you want to know more.
+GPL version 3. Please take a look into LICENSE if you want to know more.
 
 ## Prerequisites ##
 To run sync.io, you should have the following applications installed and configured:

@@ -6,7 +6,9 @@
 
   SyncIO = require('./lib/SyncIO');
 
-  app = new SyncIO(path.join(__dirname, '../config.json'));
+  app = new SyncIO();
+
+  app.loadConfig(path.join(__dirname, '../config.json'));
 
   app.run();
 

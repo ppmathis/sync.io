@@ -9,50 +9,38 @@ fs = require('fs')
 pjson = require('../../package.json')
 
 module.exports = class WebServer
-  constructor: (@app) ->
-    @web = express()
-    @registerRoutes()
 
-  registerRoutes: ->
-    @web.use('/', express.static(path.join(__dirname, '..', '..', 'web')))
+  # Class constructor
+  constructor: (@_app) ->
+    # Setup express.js
+    @_webapp = express()
+    @_webapp.use(express.methodOverride());
 
-    @web.get('/api/version', (req, res) =>
-      res.send({version: pjson.version})
+    @_registerRoutes()
+
+  # Register all routes with express.js
+  _registerRoutes: ->
+    # Route for static files within the 'web' directory
+    @_webapp.use('/', express.static(path.join(__dirname, '..', '..', 'web')))
+
+    # Returns the current version of sync.io
+    @_webapp.get('/api/version', (req, res) =>
+      res.send(success: true, version: pjson.version)
     )
 
-    @web.get('/api/flush/:sid', (req, res) =>
-      shares = @app.syncServer.trackerData
-      if shares[req.params.sid]?
-        delete shares[req.params.sid]
-      res.send({success: true});
+    # Returns all announced shares
+    @_webapp.get('/api/shares', (req, res) =>
+      shares = @_app.getTracker().getShares('json')
+      res.send(success: true, payload: shares)
     )
 
-    @web.get('/api/shares', (req, res) =>
-      shares = []
-
-      for shareId, share of @app.syncServer.trackerData
-        # Only copy a few attributes, binary data shouldn't be sent over the API
-        tmp = (
-          createdAt: share.createdAt
-          updatedAt: share.updatedAt
-          id: shareId
-          peers: []
-        )
-
-        # Same applies for the peer list, binary data shouldn't be sent over the API
-        for peerId, peer of share.peers
-          tmp.peers.push(
-            createdAt: peer.createdAt
-            updatedAt: peer.updatedAt
-            id: peerId
-            rpeer: peer.rpeer[0]
-            lpeer: peer.lpeer[0]
-          )
-        shares.push(tmp)
-
-      res.send({shares: shares})
+    # Deletes the share with the given ID
+    @_webapp.get('/api/flush/:id', (req, res) =>
+      @_app.getTracker().deleteShare(req.params.id)
+      res.send(success: true)
     )
 
+  # Starts the web server and listens at the given address and port
   listen: (port, address) ->
-    @web.listen(port, address)
-    @app.log.info('sync.io web server listening on ' + address + ':' + port)
+    @_webapp.listen(port, address)
+    @_app.getLogger().info('Web server listening on ' + address + ':' + port)

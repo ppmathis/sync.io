@@ -11,64 +11,41 @@
   pjson = require('../../package.json');
 
   module.exports = WebServer = (function() {
-    function WebServer(app) {
-      this.app = app;
-      this.web = express();
-      this.registerRoutes();
+    function WebServer(_app) {
+      this._app = _app;
+      this._webapp = express();
+      this._webapp.use(express.methodOverride());
+      this._registerRoutes();
     }
 
-    WebServer.prototype.registerRoutes = function() {
+    WebServer.prototype._registerRoutes = function() {
       var _this = this;
-      this.web.use('/', express["static"](path.join(__dirname, '..', '..', 'web')));
-      this.web.get('/api/version', function(req, res) {
+      this._webapp.use('/', express["static"](path.join(__dirname, '..', '..', 'web')));
+      this._webapp.get('/api/version', function(req, res) {
         return res.send({
+          success: true,
           version: pjson.version
         });
       });
-      this.web.get('/api/flush/:sid', function(req, res) {
+      this._webapp.get('/api/shares', function(req, res) {
         var shares;
-        shares = _this.app.syncServer.trackerData;
-        if (shares[req.params.sid] != null) {
-          delete shares[req.params.sid];
-        }
+        shares = _this._app.getTracker().getShares('json');
         return res.send({
-          success: true
+          success: true,
+          payload: shares
         });
       });
-      return this.web.get('/api/shares', function(req, res) {
-        var peer, peerId, share, shareId, shares, tmp, _ref, _ref1;
-        shares = [];
-        _ref = _this.app.syncServer.trackerData;
-        for (shareId in _ref) {
-          share = _ref[shareId];
-          tmp = {
-            createdAt: share.createdAt,
-            updatedAt: share.updatedAt,
-            id: shareId,
-            peers: []
-          };
-          _ref1 = share.peers;
-          for (peerId in _ref1) {
-            peer = _ref1[peerId];
-            tmp.peers.push({
-              createdAt: peer.createdAt,
-              updatedAt: peer.updatedAt,
-              id: peerId,
-              rpeer: peer.rpeer[0],
-              lpeer: peer.lpeer[0]
-            });
-          }
-          shares.push(tmp);
-        }
+      return this._webapp.get('/api/flush/:id', function(req, res) {
+        _this._app.getTracker().deleteShare(req.params.id);
         return res.send({
-          shares: shares
+          success: true
         });
       });
     };
 
     WebServer.prototype.listen = function(port, address) {
-      this.web.listen(port, address);
-      return this.app.log.info('sync.io web server listening on ' + address + ':' + port);
+      this._webapp.listen(port, address);
+      return this._app.getLogger().info('Web server listening on ' + address + ':' + port);
     };
 
     return WebServer;

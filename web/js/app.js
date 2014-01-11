@@ -17,7 +17,7 @@ $(function() {
             modal.append($('<div data-bind="visible: wasDeleted" class="alert alert-warning"><b>Oh snap!</b> It seems like no peers were active, which is why this share announcement was deleted.</div>'));
             peerlist = $('<table id="peer-table" class="share-table peer-table"></table>');
             peerlist.append($('<thead><tr><th>Peer ID</th><th>Remote address</th><th>Local address</th><th>Last ping</th></tr></thead>'));
-            peerlist.append($('<tbody data-bind="foreach: currentShare().peers"><tr><td data-bind="text: id"></td><td data-bind="text: rpeer.address + \':\' + rpeer.port"></td><td data-bind="text: lpeer.address + \':\' + lpeer.port"></td><td data-bind="text: moment(updatedAt).format(\'HH:mm:ss\')"></td></tr></tbody>'))
+            peerlist.append($('<tbody data-bind="foreach: currentShare().peers"><tr><td data-bind="text: id"></td><td data-bind="text: remote.address + \':\' + remote.port"></td><td data-bind="text: local.address + \':\' + local.port"></td><td data-bind="text: moment(updatedAt).format(\'HH:mm:ss\')"></td></tr></tbody>'))
             modal.append(peerlist);
 
             BootstrapDialog.show({
@@ -44,14 +44,14 @@ $(function() {
         // Regularly update share data
         function updateShares() {
             $.getJSON('/api/shares', function(data) {
-                self.shares(data.shares || []);
+                self.shares(data.payload || []);
 
                 var foundActivePeerList = false;
-                for(var key in data.shares) {
-                    if(!data.shares.hasOwnProperty(key)) continue;
+                for(var key in data.payload) {
+                    if(!data.payload.hasOwnProperty(key)) continue;
 
-                    if(data.shares[key].id == self.currentShare().id) {
-                        self.currentShare(data.shares[key]);
+                    if(data.payload[key].id == self.currentShare().id) {
+                        self.currentShare(data.payload[key]);
                         foundActivePeerList = true;
                         break;
                     }

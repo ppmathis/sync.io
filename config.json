@@ -1,11 +1,11 @@
 {
     "_COMMENT_": "Specifies on which address and port the sync server should listen. Because the Sync client does not allow any changes to the port, you should not mess around with that.",
-    "serverAddress": "0.0.0.0",
-    "serverPort": 3000,
+    "syncServerAddress": "0.0.0.0",
+    "syncServerPort": 3000,
 
     "_COMMENT_": "Specifies on which address and port the web server should listen. Feel free to change the settings, and don't forget to take a look at the status page!",
-    "webAddress": "0.0.0.0",
-    "webPort": 4000,
+    "webServerAddress": "0.0.0.0",
+    "webServerPort": 4000,
 
     "_COMMENT_": "Every 10 seconds, BTSync sends a ping to the tracker server. This value specifies after how many seconds without receiving any pings a peer should be considered as dead.",
     "peerTimeout": 60

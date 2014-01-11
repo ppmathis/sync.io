@@ -6,5 +6,7 @@
 path = require('path')
 SyncIO = require('./lib/SyncIO')
 
-app = new SyncIO(path.join(__dirname, '../config.json'))
+# Run sync.io with the given configuration file
+app = new SyncIO()
+app.loadConfig(path.join(__dirname, '../config.json'))
 app.run()

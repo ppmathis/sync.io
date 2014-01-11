@@ -8,6 +8,7 @@ util = require('util')
 # A list of error classes which should be generated
 errorClasses = [
   'ConfigurationError'
+  'ParameterError'
 ]
 
 # SIOError is the base class for all other errors from sync.io
