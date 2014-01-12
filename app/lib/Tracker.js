@@ -156,6 +156,10 @@
       return delete this._shares[id];
     };
 
+    Tracker.prototype.getRawShares = function() {
+      return this._shares;
+    };
+
     return Tracker;
 
   })();

@@ -27,7 +27,7 @@
       var addr;
       addr = new Buffer(6);
       addr.writeUInt32LE(this.ip_aton(ip), 0);
-      addr.writeUInt16LE(port, 4);
+      addr.writeUInt16BE(port, 4);
       return addr;
     };
 

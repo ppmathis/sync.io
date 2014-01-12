@@ -21,7 +21,7 @@ module.exports = (app, packetData, peer) ->
     binId: packetData.peer
     local:
       address: misc.ip_ntoa(packetData.la.readUInt32LE(0))
-      port: packetData.la.readUInt16LE(4)
+      port: packetData.la.readUInt16BE(4)
     binLocal: packetData.la
     remote:
       address: peer.address

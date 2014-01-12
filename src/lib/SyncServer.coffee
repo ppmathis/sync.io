@@ -33,13 +33,10 @@ module.exports = class SyncServer
     # start with bencoded data. That's why we try to decode the
     # data, and if it fails, it must be a relay server packet.
     packetData = bencoding.decode(packetPayload)
-    if packetData.length isnt 0
+    if packetData.length isnt 0 and packetData.toJSON?
       @_app.getTracker().handlePacket(packetData.toJSON(), peer)
     else
       @_app.getLogger().warning('Relay server not yet implemented. Packet discarded.')
-      # relayPeer = packetPayload.slice(0, 20).toString('hex')
-      # packetPayload = packetPayload.slice(20)
-      # @_app.getRelay().handlePacket(packetPayload, relayPeer)
 
   _parsePacketHeader: (packet) ->
     # Split header from payload
@@ -62,12 +59,16 @@ module.exports = class SyncServer
 
   # Sends an answer packet back to the given peer
   sendAnswer: (answerData, peer) ->
-    # Encode answer data with bencode and prepend BTSync header
-    packetPayload = bencoding.encode(answerData)
-    packet = new Buffer(PACKET_HEADER.length + packetPayload.length)
+    # Encode answer data with bencode if necessary
+    if answerData.constructor.name isnt 'Buffer'
+      packetPayload = bencoding.encode(answerData)
+    else
+      packetPayload = answerData
 
+    # Prepend packet header
+    packet = new Buffer(PACKET_HEADER.length + packetPayload.length)
     PACKET_HEADER.copy(packet)
-    packetPayload.copy(packet, PACKET_HEADER)
+    packetPayload.copy(packet, PACKET_HEADER.length)
 
     # Send packet back to peer
     @_socket.send(packet, 0, packet.length, peer.port, peer.address)

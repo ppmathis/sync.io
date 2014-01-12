@@ -29,7 +29,7 @@
       var packetData, packetHeader, packetPayload, _ref;
       _ref = this._parsePacketHeader(packet), packetHeader = _ref[0], packetPayload = _ref[1];
       packetData = bencoding.decode(packetPayload);
-      if (packetData.length !== 0) {
+      if (packetData.length !== 0 && (packetData.toJSON != null)) {
         return this._app.getTracker().handlePacket(packetData.toJSON(), peer);
       } else {
         return this._app.getLogger().warning('Relay server not yet implemented. Packet discarded.');
@@ -55,10 +55,14 @@
 
     SyncServer.prototype.sendAnswer = function(answerData, peer) {
       var packet, packetPayload;
-      packetPayload = bencoding.encode(answerData);
+      if (answerData.constructor.name !== 'Buffer') {
+        packetPayload = bencoding.encode(answerData);
+      } else {
+        packetPayload = answerData;
+      }
       packet = new Buffer(PACKET_HEADER.length + packetPayload.length);
       PACKET_HEADER.copy(packet);
-      packetPayload.copy(packet, PACKET_HEADER);
+      packetPayload.copy(packet, PACKET_HEADER.length);
       return this._socket.send(packet, 0, packet.length, peer.port, peer.address);
     };
 

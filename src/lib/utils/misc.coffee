@@ -18,7 +18,7 @@ module.exports = class MiscUtils
   @bts_addr = (ip, port) ->
     addr = new Buffer(6)
     addr.writeUInt32LE(@ip_aton(ip), 0)
-    addr.writeUInt16LE(port, 4)
+    addr.writeUInt16BE(port, 4)
     return addr
 
   @stripKeys = (object, allowedKeys) ->

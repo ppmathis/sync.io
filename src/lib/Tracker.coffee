@@ -15,7 +15,7 @@ module.exports = class Tracker
     @_handlers =
       get_peers: require('./packets/get_peers')
 
-    # Delete dead peers and shares every 10 seconds
+    # Check for dead peers and shares every 10 seconds
     setInterval(@_deleteDeadPeers, 10000)
 
   # Delete peers which did not send any announcement since a amount
@@ -143,3 +143,6 @@ module.exports = class Tracker
   deleteShare: (id) ->
     @_app.getLogger().metric('Flushed share announcement: ' + id)
     delete @_shares[id]
+
+  # Just return the '_shares' property. Should be used with care!
+  getRawShares: -> return @_shares
