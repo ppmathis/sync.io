@@ -9,7 +9,6 @@ pjson = require('../../package.json')
 errors = require('./utils/errors')
 
 Tracker = require('./Tracker')
-Relay = require('./Relay')
 SyncServer = require('./SyncServer')
 WebServer = require('./WebServer')
 
@@ -19,7 +18,6 @@ module.exports = class SyncIO
   constructor: () ->
     # Initialize some private variables
     @_tracker = new Tracker(@)
-    @_relay = new Relay(@)
 
     @initializeLogging()
 
@@ -54,6 +52,5 @@ module.exports = class SyncIO
   getConfig: -> return @_config
   getLogger: -> return @_logger
   getTracker: -> return @_tracker
-  getRelay: -> return @_relay
   getWebServer: -> return @_webServer
   getSyncServer: -> return @_syncServer
