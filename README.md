@@ -1,5 +1,5 @@
   
-<p align="center"><img src="http://dl.snapserv.net/syncio.png" /></p>
+<p align="center"><img src="https://dl.snapserv.net/projects/sync.io/logo.png" /></p>
 
 # sync.io #
 sync.io is a open-source **BitTorrent Sync** tracker server, which is meant for internal use within companies. A open-source relay server is under development and will follow soon. A special gimmick is the inbuilt web status page where you can see all announced shares and their peers.
@@ -47,8 +47,8 @@ This application was mainly designed for my workplace. We've just added a DNS re
 ## Web status page ##
 Hey, stop! Didn't you say something about an inbuilt web status page? Yes, just open your browser and head over to: *http://yourtracker:4000* - Ofcourse, if you've changed the port within the configuration file, you will need to adjust the port. Screenshot? Sure, here we go:
 
-<p align="center"><img src="http://dl.snapserv.net/syncio-screen1.png" /></p>
-<p align="center"><img src="http://dl.snapserv.net/syncio-screen2.png" /></p>
+<p align="center"><img src="https://dl.snapserv.net/projects/sync.io/screen01.png" /></p>
+<p align="center"><img src="https://dl.snapserv.net/projects/sync.io/screen02.png" /></p>
 
 ## Need help? ##
 Do you need any help? Do you have any suggestions or some feedback? Feel free to contact me by [mail](mailto:dev@snapserv.net).
