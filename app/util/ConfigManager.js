@@ -25,6 +25,7 @@ var ConfigManager = dejavu.Class.declare({
 		} catch(err) {
 			this.__$loggerService.error('Could not load configuration file: ' + configFile);
 			this.__$loggerService.error(err.toString());
+			this.__$loggerService.error('The application will exit now.');
 			process.exit(1);
 		}
 	},
@@ -33,6 +34,7 @@ var ConfigManager = dejavu.Class.declare({
 		if(!this.__mergedConfig.hasOwnProperty(configKey)) {
 			this.__$loggerService.error('Application requested inexistant configuration key: ' + configKey);
 			this.__$loggerService.error('This should not happen. Did you mess with the default config?');
+			this.__$loggerService.error('The application will exit now.');
 			process.exit(2);
 		}
 		return this.__mergedConfig[configKey];

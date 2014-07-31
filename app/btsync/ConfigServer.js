@@ -23,8 +23,9 @@ var ConfigServer = dejavu.Class.declare({
 		}.$bind(this));
 
 		this.__httpServer.on('error', function(err) {
-			this.__$loggerService.error('ConfigServer could not start listening on port ' + port);
+			this.__$loggerService.error('ConfigServer occured a fatal socket error on port ' + port);
 			this.__$loggerService.error(err.toString());
+			this.__$loggerService.error('The application will exit now.');
 			process.exit(3);	
 		}.$bind(this));
 
