@@ -9,7 +9,7 @@ var ConfigManager = dejavu.Class.declare({
 	__userConfig: null,
 	__mergedConfig: null,
 
-	__$logger: null,
+	__$loggerService: null,
 
 	initialize: function($loggerService) {
 		this.__resetConfiguration();
@@ -29,11 +29,25 @@ var ConfigManager = dejavu.Class.declare({
 		}
 	},
 
+	get: function(configKey, defaultValue) {
+		if(!this.__mergedConfig.hasOwnProperty(configKey)) {
+			this.__$loggerService.error('Application requested inexistant configuration key: ' + configKey);
+			this.__$loggerService.error('This should not happen. Did you mess with the default config?');
+			process.exit(2);
+		}
+		return this.__mergedConfig[configKey];
+	},
+
 	__resetConfiguration: function() {
 		this.__defaultConfig = {
 			peerTimeout: 60,
+			serveConfig: true,
+			serveTracker: true,
+			serveWeb: true,
+
+			configPort: 80,
 			trackerPort: 3000,
-			webguiPort: 4000,
+			webPort: 4000,
 
 			persistentShares: []
 		};

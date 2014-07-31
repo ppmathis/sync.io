@@ -18,6 +18,7 @@ examples/*
 !examples/*.js
 test/temp/*
 !test/temp/.gitkeep
+bin/config.json
 
 # Node.js rules
 node_modules
