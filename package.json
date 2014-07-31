@@ -1,0 +1,40 @@
+{
+	"name": "keepass.io",
+	"version": "2.0.0",
+	"description": "Open-source BitTorrent Sync tracker server",
+	"keywords": [
+		"bittorrent",
+		"bt",
+		"sync",
+		"opensource",
+		"tracker",
+		"btsync"
+	],
+
+	"license": "GPL-3.0",
+	"author": "Pascal Mathis <dev@snapserv.net> (https://www.pascalmathis.com)",
+	"contributors": [],
+
+	"homepage": "https://www.snapserv.net/projects/keepass.io",
+	"bugs": "https://github.com/NeoXiD/sync.io/issues",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/NeoXiD/sync.io.git"
+	},
+
+	"main": "./app/SyncIO.js",
+	"scripts": {
+		"start": "node bin/server.js"
+	},
+	"engines": {
+		"node": ">=0.10.x"
+	},
+
+	"dependencies": {
+		"bencoding": "~0.0.1",
+		"dejavu": "~0.4.7",
+		"express": "~4.7.2",
+		"winston": "~0.7.3"
+	},
+	"devDependencies": {}
+}
