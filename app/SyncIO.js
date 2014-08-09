@@ -1,4 +1,5 @@
 'use strict';
+var events = require('events');
 var dejavu = require('dejavu');
 var LoggerService = require('./util/LoggerService');
 var ConfigManager = require('./util/ConfigManager');
@@ -8,16 +9,18 @@ var TrackerServer = require('./btsync/TrackerServer');
 var SyncIO = dejavu.Class.declare({
 	$name: 'SyncIO',
 
+	__$eventSystem: null,
 	__$loggerService: null,
 	__$configManager: null,
 	__$configServer: null,
 	__$trackerServer: null,
 
 	initialize: function() {
+		this.__$eventSystem = new events.EventEmitter();
 		this.__$loggerService = new LoggerService();
 		this.__$configManager = new ConfigManager(this.__$loggerService);
 		this.__$configServer = new ConfigServer(this.__$loggerService, this.__$configManager);
-		this.__$trackerServer = new TrackerServer(this.__$loggerService);
+		this.__$trackerServer = new TrackerServer(this.__$loggerService, this.__$eventSystem);
 	},
 
 	run: function(configurationFile) {

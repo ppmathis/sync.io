@@ -16,8 +16,10 @@ var LoggerService = dejavu.Class.declare({
 	__setupTransports: function() {
 		this.__winston.add(winston.transports.Console, {
 			colorize: true,
-			timestamps: true
+			timestamp: true,
+			level: 'silly'
 		});
+		this.__winston.cli();
 	},
 
 	__printWelcomeMessage: function() {
@@ -30,6 +32,10 @@ var LoggerService = dejavu.Class.declare({
 	},
 
 	/* Wrappers around winston */
+	silly: function() { this.__winston.silly.apply(this.__winston, arguments); },
+	debug: function() { this.__winston.debug.apply(this.__winston, arguments); },
+	verbose: function() { this.__winston.verbose.apply(this.__winston, arguments); },
+	data: function() { this.__winston.data.apply(this.__winston, arguments); },
 	info: function() { this.__winston.info.apply(this.__winston, arguments); },
 	warn: function() { this.__winston.warn.apply(this.__winston, arguments); },
 	error: function() { this.__winston.error.apply(this.__winston, arguments); }

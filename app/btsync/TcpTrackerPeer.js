@@ -1,6 +1,7 @@
 'use strict';
 var dejavu = require('dejavu');
 var bencoding = require('bencoding');
+var Helpers = require('../util/Helpers');
 
 var TcpTrackerPeer = dejavu.Class.declare({
 	$name: 'TcpTrackerPeer',
@@ -13,21 +14,22 @@ var TcpTrackerPeer = dejavu.Class.declare({
 
 	__$loggerService: null,
 
-	initialize: function(peer, $loggerService) {
+	initialize: function(peer, $loggerService, $eventSystem) {
 		this.__peer = peer;
 		this.__$loggerService = $loggerService;
+		this.__$eventSystem = $eventSystem;
 		this.__peer.on('data', this.__onData);
 		this.__onConnect();
 	},
 
 	__onConnect: function() {
-		this.__logPrefix = '[' + this.__peer.remoteAddress + '] ';
+		this.__logPrefix = '[' + this.__peer.remoteAddress + ':' + this.__peer.remotePort + '] ';
 		this.__$loggerService.info('New TcpTrackerPeer: ' + this.__peer.remoteAddress);
 	}.$bound(),
 
 	__onData: function(data) {
 		if(this.__expectedBytes)
-			this.__$loggerService.info(this.__logPrefix + 'Current: ' + this.__currentBytes + ', Expected: ' + this.__expectedBytes);
+			this.__$loggerService.silly(this.__logPrefix + 'Current bytes: ' + this.__currentBytes + ', Expected bytes: ' + this.__expectedBytes);
 		if(!this.__expectedBytes) {
 			if(data.length < 4) {
 				this.__$loggerService.warn(this.__logPrefix + 'Expected 4 byte packet size, got ' + data.length + ' bytes');
@@ -62,9 +64,32 @@ var TcpTrackerPeer = dejavu.Class.declare({
 		}
 		packet = packet.toJSON();
 
-		// Check if packet has a valid type
+		// Handle packet based on its type or discard if invalid
 		var packetType = packet.hasOwnProperty('m') ? packet.m.toString() : null;
-		console.log(packetType);
+		switch(packetType) {
+			case 'get_peers': this.__onGetPeers(packet); break;
+			default:
+				this.__$loggerService.warn(this.__logPrefix + 'Discarded packet with invalid type: ' + packetType);
+		}
+	},
+
+	__onGetPeers: function(packet) {
+		try {
+			var shareId = packet.share.toString('hex');
+			var peerId = packet.peer.toString('hex');
+			var localAddress = Helpers.ip_ntoa(packet.la.readUInt32BE());
+			var localPort = packet.lp;
+
+			this.__$loggerService.verbose(this.__logPrefix + 'Trying to announce share: ' + shareId);
+			this.__$loggerService.verbose(this.__logPrefix + '> Peer ID: ' + peerId);
+			this.__$loggerService.verbose(this.__logPrefix + '> Local connection: ' + localAddress + ':' + localPort);
+			this.__$eventSystem.emit('share.add_peer',
+				{ shareId: shareId, peerId: peerId, localAddress: localAddress, localPort: localPort}
+			);
+		} catch(err) {
+			this.__$loggerService.error(this.__logPrefix + 'An error occured while executing onGetPeers()');
+			this.__$loggerService.error(this.__logPrefix + err.toString());
+		}
 	}
 });
 

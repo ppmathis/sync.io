@@ -9,9 +9,9 @@ var TrackerServer = dejavu.Class.declare({
 	__tcpServer: null,
 	__udpServer: null,
 
-	initialize: function($loggerService) {
-		this.__tcpServer = new TcpTrackerServer($loggerService);
-		this.__udpServer = new UdpTrackerServer($loggerService);
+	initialize: function($loggerService, $eventSystem) {
+		this.__tcpServer = new TcpTrackerServer($loggerService, $eventSystem);
+		this.__udpServer = new UdpTrackerServer($loggerService, $eventSystem);
 	},
 
 	listen: function(port) {

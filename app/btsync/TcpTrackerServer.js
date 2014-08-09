@@ -9,10 +9,12 @@ var TcpTrackerServer = dejavu.Class.declare({
 	__socket: null,
 
 	__$loggerService: null,
+	__$eventSystem: null,
 
-	initialize: function($loggerService) {
+	initialize: function($loggerService, $eventSystem) {
 		this.__socket = net.createServer();
 		this.__$loggerService = $loggerService;
+		this.__$eventSystem = $eventSystem;
 	},
 
 	listen: function(port) {
@@ -26,7 +28,7 @@ var TcpTrackerServer = dejavu.Class.declare({
 	},
 
 	__onSocketConnection: function(peer) {
-		new TcpTrackerPeer(peer, this.__$loggerService);
+		new TcpTrackerPeer(peer, this.__$loggerService, this.__$eventSystem);
 	}.$bound(),
 
 	__onSocketError: function(err) {
