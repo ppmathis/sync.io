@@ -83,9 +83,14 @@ var TcpTrackerPeer = dejavu.Class.declare({
 			this.__$loggerService.verbose(this.__logPrefix + 'Trying to announce share: ' + shareId);
 			this.__$loggerService.verbose(this.__logPrefix + '> Peer ID: ' + peerId);
 			this.__$loggerService.verbose(this.__logPrefix + '> Local connection: ' + localAddress + ':' + localPort);
-			this.__$eventSystem.emit('share.add_peer',
-				{ shareId: shareId, peerId: peerId, localAddress: localAddress, localPort: localPort}
-			);
+			this.__$eventSystem.emit('btsync.handle_peer_announcement', {
+				shareId: shareId,
+				peerId: peerId,
+				localAddress: localAddress,
+				localPort: localPort,
+				remoteAddress: this.__peer.remoteAddress,
+				remotePort: this.__peer.remotePort
+			}, this.__peer);
 		} catch(err) {
 			this.__$loggerService.error(this.__logPrefix + 'An error occured while executing onGetPeers()');
 			this.__$loggerService.error(this.__logPrefix + err.toString());

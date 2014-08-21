@@ -5,6 +5,7 @@ var LoggerService = require('./util/LoggerService');
 var ConfigManager = require('./util/ConfigManager');
 var ConfigServer = require('./btsync/ConfigServer');
 var TrackerServer = require('./btsync/TrackerServer');
+var TrackerManager = require('./btsync/TrackerManager');
 
 var SyncIO = dejavu.Class.declare({
 	$name: 'SyncIO',
@@ -12,8 +13,9 @@ var SyncIO = dejavu.Class.declare({
 	__$eventSystem: null,
 	__$loggerService: null,
 	__$configManager: null,
+	__$shareManager: null,
 	__$configServer: null,
-	__$trackerServer: null,
+	__$trackerManager: null,
 
 	initialize: function() {
 		this.__$eventSystem = new events.EventEmitter();
@@ -21,6 +23,7 @@ var SyncIO = dejavu.Class.declare({
 		this.__$configManager = new ConfigManager(this.__$loggerService);
 		this.__$configServer = new ConfigServer(this.__$loggerService, this.__$configManager);
 		this.__$trackerServer = new TrackerServer(this.__$loggerService, this.__$eventSystem);
+		this.__$trackerManager = new TrackerManager(this.__$loggerService, this.__$eventSystem);
 	},
 
 	run: function(configurationFile) {
