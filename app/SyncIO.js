@@ -1,5 +1,6 @@
 'use strict';
 var events = require('events');
+var colors = require('colors');
 var dejavu = require('dejavu');
 var LoggerService = require('./util/LoggerService');
 var ConfigManager = require('./util/ConfigManager');

@@ -19,6 +19,28 @@ var Helpers = dejavu.Class.declare({
 				((numericIp >>  8) & 0xFF),
 				((numericIp >>  0) & 0xFF)
 			].join('.');
+		},
+
+		/**
+		 * Returns the current UNIX timestamp - that's it, just a nice little shortcut,
+		 * as I'm too lazy to type that command over and over again.
+		 * 
+		 * @return {number} Current UNIX timestamp
+		 */
+		timestamp: function() {
+			return (new Date()).getTime();
+		},
+
+		/**
+		 * Shorts an ID down to 7 characters. This ID might be no longer unique, but
+		 * should be used for logging, to avoid ugly long character sequences of
+		 * hex-encoded IDs.
+		 * 
+		 * @param  {string} id The whole ID
+		 * @return {string} Shortened ID
+		 */
+		shortenId: function(id) {
+			return id.substring(0, 12);
 		}
 	}
 });
