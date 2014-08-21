@@ -1,7 +1,7 @@
 'use strict';
 var dejavu = require('dejavu');
 var net = require('net');
-var TcpTrackerPeer = require('./TcpTrackerPeer');
+var TcpTrackerPeer = require('../TcpTrackerPeer');
 
 var TcpTrackerServer = dejavu.Class.declare({
 	$name: 'TcpTrackerServer',

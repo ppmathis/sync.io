@@ -3,8 +3,8 @@ var events = require('events');
 var dejavu = require('dejavu');
 var LoggerService = require('./util/LoggerService');
 var ConfigManager = require('./util/ConfigManager');
-var ConfigServer = require('./btsync/ConfigServer');
-var TrackerServer = require('./btsync/TrackerServer');
+var ConfigServer = require('./btsync/servers/ConfigServer');
+var TrackerServer = require('./btsync/servers/TrackerServer');
 var TrackerManager = require('./btsync/TrackerManager');
 
 var SyncIO = dejavu.Class.declare({
