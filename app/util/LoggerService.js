@@ -5,14 +5,32 @@ var winston = require('winston');
 var LoggerService = dejavu.Class.declare({
 	$name: 'LoggerService',
 
+	/* Private variables */
 	__winston: null,
 
+	/**
+	 * Initializes a new LoggerService instance. This function
+	 * will setup a new Winston instance, add some transports
+	 * and then print the welcome message. There's no way to
+	 * suppress the welcome message, so this instance should
+	 * be shared across the application.
+	 * 
+	 * @constructor
+	 */
 	initialize: function() {
 		this.__winston = new winston.Logger();
 		this.__setupTransports();
 		this.__printWelcomeMessage();
 	},
 
+	/**
+	 * As Winston is based on user-configurable transports,
+	 * this method adds a basic console logger to Winston.
+	 * It will also enable the CLI mode of Winston, to improve
+	 * the output of big data.
+	 * 
+	 * @private
+	 */
 	__setupTransports: function() {
 		this.__winston.add(winston.transports.Console, {
 			colorize: true,
@@ -22,6 +40,11 @@ var LoggerService = dejavu.Class.declare({
 		this.__winston.cli();
 	},
 
+	/**
+	 * This method prints the Sync.IO welcome message. You're
+	 * not allowed to modify or remove this function at all.
+	 * Please show some respect to the author - thanks!
+	 */
 	__printWelcomeMessage: function() {
 		this.__winston.info('==================== sync.io ========================');
 		this.__winston.info('| Made by: Pascal Mathis <dev@snapserv.net>         |');

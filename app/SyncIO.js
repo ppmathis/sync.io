@@ -10,6 +10,7 @@ var TrackerManager = require('./btsync/TrackerManager');
 var SyncIO = dejavu.Class.declare({
 	$name: 'SyncIO',
 
+	/* Module instances */
 	__$eventSystem: null,
 	__$loggerService: null,
 	__$configManager: null,
@@ -17,6 +18,14 @@ var SyncIO = dejavu.Class.declare({
 	__$configServer: null,
 	__$trackerManager: null,
 
+	/**
+	 * Initializes a new Sync.IO instance. This function won't do
+	 * anything, it just prepares the Sync.IO server by instantiating
+	 * some required child modules. Call run() to actually execute this
+	 * application.
+	 *
+	 * @constructor
+	 */
 	initialize: function() {
 		this.__$eventSystem = new events.EventEmitter();
 		this.__$loggerService = new LoggerService();
@@ -26,6 +35,13 @@ var SyncIO = dejavu.Class.declare({
 		this.__$trackerManager = new TrackerManager(this.__$loggerService, this.__$eventSystem);
 	},
 
+	/**
+	 * Run this Sync.IO instance with the provided configuration file.
+	 * This file should only be called once, otherwise bad things might
+	 * happen.
+	 * 
+	 * @param  {string} configurationFile Path to configuration file
+	 */
 	run: function(configurationFile) {
 		this.__$configManager.loadFromFile(configurationFile);
 		if(this.__$configManager.get('serveConfig')) {

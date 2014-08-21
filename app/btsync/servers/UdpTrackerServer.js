@@ -32,7 +32,7 @@ var UdpTrackerServer = dejavu.Class.declare({
 		this.__$loggerService.error('UdpTrackerServer occured a fatal socket error on port ' + port);
 		this.__$loggerService.error(err.toString());
 		this.__$loggerService.error('The application will exit now.');
-		process.exit(4);
+		process.exit(5);
 	}.$bound()
 });
 
