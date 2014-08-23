@@ -13,6 +13,7 @@ var TcpTrackerPeer = dejavu.Class.declare({
 	__logPrefix: null,
 
 	__$loggerService: null,
+	__$eventSystem: null,
 
 	initialize: function(peer, $loggerService, $eventSystem) {
 		this.__peer = peer;
@@ -79,14 +80,11 @@ var TcpTrackerPeer = dejavu.Class.declare({
 		var localAddress = Helpers.ip_ntoa(packet.la.readUInt32BE());
 		var localPort = packet.lp;
 
-		this.__$loggerService.verbose(this.__logPrefix + 'Trying to announce share: ' + shareId);
-		this.__$loggerService.verbose(this.__logPrefix + '> Peer ID: ' + peerId);
-		this.__$loggerService.verbose(this.__logPrefix + '> Local connection: ' + localAddress + ':' + localPort);
-		this.__$eventSystem.emit('btsync.handle_peer_announcement', {
+		this.__$eventSystem.emit('btsync.peer_announcement', this.__peer, {
 			shareId: shareId, peerId: peerId,
 			localAddress: localAddress, localPort: localPort,
 			remoteAddress: this.__peer.remoteAddress, remotePort: this.__peer.remotePort
-		}, this.__peer);
+		});
 	}
 });
 

@@ -6,7 +6,10 @@ var LoggerService = require('./util/LoggerService');
 var ConfigManager = require('./util/ConfigManager');
 var ConfigServer = require('./btsync/servers/ConfigServer');
 var TrackerServer = require('./btsync/servers/TrackerServer');
-var TrackerManager = require('./btsync/TrackerManager');
+var PeerManager = require('./btsync/managers/PeerManager');
+var ShareManager = require('./btsync/managers/ShareManager');
+var AnnouncementManager = require('./btsync/managers/AnnouncementManager');
+
 
 var SyncIO = dejavu.Class.declare({
 	$name: 'SyncIO',
@@ -15,9 +18,10 @@ var SyncIO = dejavu.Class.declare({
 	__$eventSystem: null,
 	__$loggerService: null,
 	__$configManager: null,
-	__$shareManager: null,
 	__$configServer: null,
-	__$trackerManager: null,
+	__$peerManager: null,
+	__$shareManager: null,
+	__$announcementManager: null,
 
 	/**
 	 * Initializes a new Sync.IO instance. This function won't do
@@ -31,9 +35,13 @@ var SyncIO = dejavu.Class.declare({
 		this.__$eventSystem = new events.EventEmitter();
 		this.__$loggerService = new LoggerService();
 		this.__$configManager = new ConfigManager(this.__$loggerService);
+		
 		this.__$configServer = new ConfigServer(this.__$loggerService, this.__$configManager);
 		this.__$trackerServer = new TrackerServer(this.__$loggerService, this.__$eventSystem);
-		this.__$trackerManager = new TrackerManager(this.__$loggerService, this.__$eventSystem);
+
+		this.__$peerManager = new PeerManager(this.__$loggerService, this.__$eventSystem);
+		this.__$shareManager = new ShareManager(this.__$loggerService, this.__$eventSystem);
+		this.__$announcementManager = new AnnouncementManager(this.__$loggerService, this.__$eventSystem);
 	},
 
 	/**
