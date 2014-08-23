@@ -30,7 +30,7 @@ var AnnouncementManager = dejavu.Class.declare({
 		} else {
 			var announcement = this.__announcements[combinedKey];
 			announcement.renew();
-			this.__$loggerService.debug('Renewed ' + announcement.toString());
+			this.__$loggerService.verbose('Renewed ' + announcement.toString());
 		}
 	}.$bound()
 });

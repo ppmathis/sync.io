@@ -20,6 +20,7 @@ var TcpTrackerPeer = dejavu.Class.declare({
 		this.__$loggerService = $loggerService;
 		this.__$eventSystem = $eventSystem;
 		this.__peer.on('data', this.__onData);
+		this.__peer.on('error', this.__onError);
 		this.__onConnect();
 	},
 
@@ -54,6 +55,10 @@ var TcpTrackerPeer = dejavu.Class.declare({
 				this.__packetBuffer.push(data);
 			}
 		}
+	}.$bound(),
+
+	__onError: function(err) {
+		this.__$loggerService.info(this.__logPrefix + 'An error occured: ' + err.toString());
 	}.$bound(),
 
 	__processPacket: function(rawPacket) {

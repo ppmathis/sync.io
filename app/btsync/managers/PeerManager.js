@@ -25,7 +25,7 @@ var PeerManager = dejavu.Class.declare({
 	__onPeerAnnouncement: function(socket, data) {
 		if(!this.__peers.hasOwnProperty(data.peerId)) {
 			var peer = this.__peers[data.peerId] = new Peer(data.peerId);
-			this.__$loggerService.verbose('Created new ' + peer.toString());
+			this.__$loggerService.info('Created new ' + peer.toString());
 		} else {
 			var peer = this.__peers[data.peerId];
 		}
