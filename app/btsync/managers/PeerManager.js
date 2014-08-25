@@ -18,6 +18,13 @@ var PeerManager = dejavu.Class.declare({
 		this.__registerEvents();
 	},
 
+	getPeer: function(peerId) {
+		for(var key in this.__peers) {
+			if(peerId === key) return this.__peers[key];
+		}
+		return null;
+	},
+
 	__registerEvents: function() {
 		this.__$eventSystem.on('btsync.peer_announcement', this.__onPeerAnnouncement);
 	},

@@ -18,6 +18,13 @@ var ShareManager = dejavu.Class.declare({
 		this.__registerEvents();
 	},
 
+	getShare: function(shareId) {
+		for(var key in this.__shares) {
+			if(shareId === key) return this.__shares[key];
+		}
+		return null;
+	},
+
 	__registerEvents: function() {
 		this.__$eventSystem.on('btsync.peer_announcement', this.__onPeerAnnouncement);
 	},

@@ -19,6 +19,7 @@ var SyncIO = dejavu.Class.declare({
 	__$loggerService: null,
 	__$configManager: null,
 	__$configServer: null,
+	__$trackerServer: null,
 	__$peerManager: null,
 	__$shareManager: null,
 	__$announcementManager: null,
@@ -41,7 +42,10 @@ var SyncIO = dejavu.Class.declare({
 
 		this.__$peerManager = new PeerManager(this.__$loggerService, this.__$eventSystem);
 		this.__$shareManager = new ShareManager(this.__$loggerService, this.__$eventSystem);
-		this.__$announcementManager = new AnnouncementManager(this.__$loggerService, this.__$eventSystem);
+		this.__$announcementManager = new AnnouncementManager(
+			this.__$loggerService, this.__$eventSystem,
+			this.__$peerManager, this.__$shareManager
+		);
 	},
 
 	/**

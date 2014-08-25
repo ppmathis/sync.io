@@ -22,6 +22,27 @@ var Helpers = dejavu.Class.declare({
 		},
 
 		/**
+		 * Converts a string IP into the 4 byte representation. This will obviously
+		 * only work with IPv4, but BTSync does not support IPv6 at the moment anyways,
+		 * so that should be fine.
+		 *
+		 * @param {string} stringIp String representation of an IP
+		 * @return {number} Numeric 4 byte representation of the given IP
+		 */
+		ip_aton: function(stringIp) {
+			// I'll definitely end up in coders hell for that hack.
+			// TODO: Come up with something better.
+			var parts = stringIp.replace('::ffff:', '').split('.');
+			if(parts.length !== 4) return -1;
+
+			var numericIp = ((parseInt(parts[0], 10) << 24) >>> 0);
+			numericIp += 	((parseInt(parts[1], 10) << 16) >>> 0);
+			numericIp += 	((parseInt(parts[2], 10) <<  8) >>> 0);
+			numericIp += 	((parseInt(parts[3], 10) <<  0) >>> 0);
+			return numericIp;
+		},
+
+		/**
 		 * Returns the current UNIX timestamp - that's it, just a nice little shortcut,
 		 * as I'm too lazy to type that command over and over again.
 		 * 

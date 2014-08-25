@@ -28,6 +28,28 @@ var Peer = dejavu.Class.declare({
 		this.__updatedAt = this.__createdAt;
 	},
 
+	send: function(payload, callback) {
+		var header = new Buffer(4);
+		header.writeUInt32BE(payload.length);
+
+		return this.__socket.write(Buffer.concat([header, payload]), callback);
+	},
+
+	/* Binary getters for BTSync protocol */
+	getLocalInterfaceBin: function() {
+		var result = new Buffer(6);
+		result.writeUInt32BE(Helpers.ip_aton(this.__local[0]), 0);
+		result.writeUInt16BE(this.__local[1], 4);
+		return result;
+	},
+
+	getRemoteInterfaceBin: function() {
+		var result = new Buffer(6);
+		result.writeUInt32BE(Helpers.ip_aton(this.__remote[0]), 0);
+		result.writeUInt16BE(this.__remote[1], 4);
+		return result;
+	},
+
 	/* Dumb getters */
 	getSocket: function() { return this.__socket; },
 	getLocalInterface: function() { return this.__local; },
